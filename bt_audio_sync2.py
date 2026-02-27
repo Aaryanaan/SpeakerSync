@@ -104,9 +104,9 @@ class RingBuffer:
             Total ring buffer size in audio frames. Must be significantly larger
             than (max_delay_frames + largest expected callback blocksize).
             Rule of thumb: 2 * max_delay_frames + 4 * blocksize.
-        channels : int
+        channels: int
             Number of audio channels (e.g., 2 for stereo).
-        delay_frames : int
+        delay_frames: int
             Initial delay in frames. The write pointer is advanced by this
             many frames at startup, pre-filling the gap with silence.
         """
@@ -250,14 +250,14 @@ class DriftCompensator:
         it consumes samples slightly faster than the host produces them.
         Over time, the ring buffer drains. If uncorrected, it underruns.
 
-        Conversely, a slow DAC causes the buffer to fill up and eventually
-        overflow (we'd drop audio).
+        slow DAC causes the buffer to fill up and eventually
+        overflow (dropping audio).
 
     Strategy:
-        Every N callback periods, check the buffer fill level. If it deviates
+        Every N callback periods, check buffer fill level. If it deviates
         from the target fill level by more than a threshold:
-        - Buffer too full  → drop 1 sample (skip a sample in the read)
-        - Buffer too empty → duplicate 1 sample (re-read previous sample)
+        - Buffer too full -> drop 1 sample (skip a sample in the read)
+        - Buffer too empty -> duplicate 1 sample (re-read previous sample)
 
         Dropping/adding ONE sample per adjustment period is inaudible.
         At 48kHz, one sample = ~21µs of time shift.
